@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 class ProfileCircle extends StatelessWidget {
   final double size;
+  final double camSize;
   final VoidCallback onTapAction;
   const ProfileCircle(
-      {super.key, required this.size, required this.onTapAction});
+      {super.key,
+      required this.size,
+      required this.onTapAction,
+      required this.camSize});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,10 @@ class ProfileCircle extends StatelessWidget {
             child: CircleAvatar(
               radius: 16,
               backgroundColor: Colors.purple[200],
-              child: Icon(Icons.camera_alt),
+              child: Icon(
+                Icons.camera_alt,
+                size: camSize,
+              ),
             ),
           ),
         ),

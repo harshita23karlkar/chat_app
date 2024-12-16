@@ -29,6 +29,7 @@ class _SignupState extends State<Signup> {
           children: [
             // profile ke liye
             ProfileCircle(
+                camSize: 20,
                 size: 50,
                 onTapAction: () {
                   print("profile pic");

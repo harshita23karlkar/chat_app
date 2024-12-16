@@ -1,3 +1,3 @@
 class AppConfig {
-  static final String baseUrl = "http://localhost:5000";
+  static final String baseUrl = "http://192.168.100.181:3000";
 }

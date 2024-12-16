@@ -13,8 +13,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final emailController = TextEditingController(text: "chattest@yopmail.com");
+  final passwordController = TextEditingController(text: "chattest");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ProfileCircle(
+                camSize: 20,
                 size: 50,
                 onTapAction: () {
                   print("logged in");
