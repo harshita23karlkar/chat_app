@@ -7,15 +7,19 @@ class UserProfileBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: Color.fromARGB(255, 241, 131, 245),
       shadowColor: Colors.grey,
-      leading: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ProfileCircle(size: 10, camSize: 8, onTapAction: () {}),
+      leading: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: const CircleAvatar(
+          radius: 16,
+          child: Icon(Icons.person),
+        ),
       ),
     );
   }
 
   @override
   // TODO: implement preferredSize
-  Size get preferredSize => Size.fromHeight(70);
+  Size get preferredSize => Size.fromHeight(60);
 }

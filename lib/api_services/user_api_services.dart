@@ -1,13 +1,12 @@
 import 'package:chat_app/api_services/api_services.dart';
-import 'package:chat_app/auth/env_var.dart';
 import 'package:chat_app/helper/end_points.dart';
 import 'package:chat_app/helper/localstorage.dart';
 import 'package:chat_app/models/Login_model.dart';
 import 'package:chat_app/models/UserSignup_model.dart';
 import 'package:chat_app/models/usersList_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserApiServices {
+  User? userData;
   userSignUp(String name, String email, String password) async {
     var credentials = {
       "name": name,
@@ -21,6 +20,7 @@ class UserApiServices {
     return userSignUpFromJson(res.body);
   }
 
+// User-Login
   Future<bool> userLogin(String username, String password) async {
     bool isLoggedIn = false;
     var credentials = {"email": username, "password": password};
@@ -29,7 +29,9 @@ class UserApiServices {
         headers: {"Content-Type": "application/json"},
         body: credentials);
     var result = loginModelFromJson(res.body);
+    userData = result.user;
     var isSaved = await LocalstorageService.setToken(result.token);
+    await LocalstorageService.setUser(result.user);
     if (isSaved) {
       isLoggedIn = true;
     } else {
@@ -40,8 +42,6 @@ class UserApiServices {
 
   // user list
   Future<List<UsersListModel>> fetchUsers() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // var token = prefs.getString(UserToken.tokenKey);
     var res = await ApiServices.getRequest(
       endPoint: ApiEndPoints.usersList,
       headers: {
