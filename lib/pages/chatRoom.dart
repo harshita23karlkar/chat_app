@@ -1,17 +1,24 @@
-import 'package:chat_app/helper/localstorage.dart';
-import 'package:chat_app/models/UserChat_model.dart';
+import 'package:chat_app/provider/chat_provider.dart';
 import 'package:chat_app/widgets/messageInputField.dart';
 import 'package:chat_app/widgets/userProfileBar.dart';
+import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
+import 'package:flutter_chat_reactions/utilities/hero_dialog_route.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
+import 'package:flutter_chat_reactions/utilities/hero_dialog_route.dart';
+import 'package:provider/provider.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class ChatScreen extends StatefulWidget {
-  final List<UserChatModel> messagesList;
+  // final List<UserChatModel> messagesList;
   final int userid;
   final String username;
 
   const ChatScreen(
       {super.key,
-      required this.messagesList,
+      // required this.messagesList,
       required this.userid,
       required this.username});
 
@@ -21,73 +28,88 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   @override
+  void initState() {
+    super.initState();
+    context.read<ChatProvider>().fetchMessagesList(widget.userid);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<UserChatModel> list = widget.messagesList;
-    LocalstorageService.getUser();
-
     // Screen start
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: UserProfileBar(),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: list.length,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-              itemBuilder: (context, index) {
-                final message = list[index];
-                final isMe = message.senderId == widget.userid;
+    return Consumer<ChatProvider>(
+      builder: (context, value, child) => Scaffold(
+        backgroundColor: Colors.black,
+        appBar: UserProfileBar(),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: value.messagesList.length,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                itemBuilder: (context, index) {
+                  final message = value.messagesList[index];
+                  final isMe = message.senderId == widget.userid;
+                  return SwipeTo(
+                    iconColor: Colors.white,
+                    iconSize: 18,
+                    iconOnRightSwipe: Icons.reply,
+                    onRightSwipe: (details) {
+                      print('Callback from Swipe To Right');
+                    },
+                    child: GestureDetector(
+                      onLongPress: () {
+                        // navigate with a custom [HeroDialogRoute] to [ReactionsDialogWidget]
+                        Navigator.of(context).push(
+                          HeroDialogRoute(
+                            builder: (context) {
+                              return ReactionsDialogWidget(
+                                id: "${message.id}", // unique id for message
+                                messageWidget: BubbleSpecialOne(
+                                    text: message.content,
+                                    delivered: isMe,
+                                    isSender: isMe,
+                                    color: isMe
+                                        ? Color.fromARGB(255, 153, 55, 156)
+                                        : Colors
+                                            .grey.shade800), // message widget
+                                onReactionTap: (reaction) {
+                                  print('reaction: $reaction');
 
-                return Row(
-                  mainAxisAlignment:
-                      isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 5),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 14),
-                      decoration: BoxDecoration(
-                        color: isMe
-                            ? Color.fromARGB(255, 153, 55, 156)
-                            : Colors.grey.shade800,
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(10),
-                          topRight: const Radius.circular(10),
-                          bottomLeft:
-                              isMe ? const Radius.circular(10) : Radius.zero,
-                          bottomRight:
-                              isMe ? Radius.zero : const Radius.circular(10),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isMe ? "You" : message.senderInfo.name,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white70,
-                            ),
+                                  if (reaction == '➕') {
+                                    // show emoji picker container
+                                  } else {
+                                    // add reaction to message
+                                  }
+                                },
+                                onContextMenuTap: (menuItem) {
+                                  print('menu item: $menuItem');
+
+                                  // handle context menu item
+                                },
+                              );
+                            },
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            message.content,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                        );
+                      },
+                      child: Hero(
+                        tag: message.id,
+                        child: BubbleSpecialOne(
+                            text: message.content,
+                            delivered: isMe,
+                            isSender: isMe,
+                            color: isMe
+                                ? Color.fromARGB(255, 153, 55, 156)
+                                : Colors.grey.shade800),
                       ),
                     ),
-                  ],
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          messageInputField(),
-        ],
+            MessageInputField(recipientId: widget.userid),
+          ],
+        ),
       ),
     );
   }

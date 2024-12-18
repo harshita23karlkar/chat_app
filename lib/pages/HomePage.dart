@@ -1,5 +1,5 @@
 import 'package:chat_app/widgets/bottom_navbar.dart';
-import 'package:chat_app/widgets/createRoom.dart';
+import 'package:chat_app/widgets/createRoomIcon.dart';
 import 'package:chat_app/widgets/userProfileBar.dart';
 
 import 'package:chat_app/widgets/usersList.dart';

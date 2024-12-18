@@ -1,4 +1,3 @@
-import 'package:chat_app/widgets/profilecircle.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileBar extends StatelessWidget implements PreferredSizeWidget {
@@ -7,11 +6,11 @@ class UserProfileBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color.fromARGB(255, 241, 131, 245),
+      backgroundColor: const Color.fromARGB(255, 242, 96, 247),
       shadowColor: Colors.grey,
       leading: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),
-        child: const CircleAvatar(
+        child: CircleAvatar(
           radius: 16,
           child: Icon(Icons.person),
         ),
@@ -20,6 +19,5 @@ class UserProfileBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  // TODO: implement preferredSize
-  Size get preferredSize => Size.fromHeight(60);
+  Size get preferredSize => const Size.fromHeight(60);
 }

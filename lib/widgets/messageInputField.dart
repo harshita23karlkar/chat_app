@@ -1,40 +1,43 @@
-// Message Input Field
+import 'package:chat_app/provider/chat_provider.dart';
+import 'package:chat_bubbles/message_bars/message_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-Widget messageInputField() {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-    color: Colors.grey.shade900,
-    child: Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.emoji_emotions_outlined, color: Colors.white),
-          onPressed: () {},
+class MessageInputField extends StatelessWidget {
+  final int recipientId;
+  const MessageInputField({super.key, required this.recipientId});
+
+  @override
+  Widget build(BuildContext context) {
+    return MessageBar(
+      messageBarColor: const Color.fromARGB(255, 34, 33, 33),
+      sendButtonColor: const Color.fromARGB(255, 252, 252, 252),
+      onSend: (value) {
+        context.read<ChatProvider>().saveMessage(recipientId, value);
+      },
+      actions: [
+        InkWell(
+          child: const Icon(
+            Icons.emoji_emotions_outlined,
+            color: Color.fromARGB(255, 253, 252, 252),
+            size: 24,
+          ),
+          onTap: () {},
         ),
-        Expanded(
-          child: TextField(
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: "Type a message...",
-              hintStyle: TextStyle(color: Colors.white70),
-              filled: true,
-              fillColor: Colors.grey.shade800,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide.none,
-              ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: InkWell(
+            child: const Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 255, 255, 255),
+              size: 24,
             ),
+            onTap: () {
+              //  add icon
+            },
           ),
         ),
-        const SizedBox(width: 8),
-        const CircleAvatar(
-          backgroundColor: Color.fromARGB(255, 241, 131, 245),
-          radius: 22,
-          child: Icon(Icons.send, color: Colors.white),
-        ),
       ],
-    ),
-  );
+    );
+  }
 }
