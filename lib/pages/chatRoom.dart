@@ -1,13 +1,16 @@
 import 'package:chat_app/provider/chat_provider.dart';
+import 'package:chat_app/widgets/emojiPickerMenu.dart';
 import 'package:chat_app/widgets/messageInputField.dart';
 import 'package:chat_app/widgets/userProfileBar.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
+import 'package:flutter_chat_reactions/model/menu_item.dart';
 import 'package:flutter_chat_reactions/utilities/hero_dialog_route.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter_chat_reactions/flutter_chat_reactions.dart';
 import 'package:flutter_chat_reactions/utilities/hero_dialog_route.dart';
+import 'package:flutter_chat_reactions/widgets/stacked_reactions.dart';
 import 'package:provider/provider.dart';
 import 'package:swipe_to/swipe_to.dart';
 
@@ -35,6 +38,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // late String reactions;
+    List<String> list = [];
     // Screen start
     return Consumer<ChatProvider>(
       builder: (context, value, child) => Scaffold(
@@ -57,50 +62,84 @@ class _ChatScreenState extends State<ChatScreen> {
                     onRightSwipe: (details) {
                       print('Callback from Swipe To Right');
                     },
-                    child: GestureDetector(
-                      onLongPress: () {
-                        // navigate with a custom [HeroDialogRoute] to [ReactionsDialogWidget]
-                        Navigator.of(context).push(
-                          HeroDialogRoute(
-                            builder: (context) {
-                              return ReactionsDialogWidget(
-                                id: "${message.id}", // unique id for message
-                                messageWidget: BubbleSpecialOne(
-                                    text: message.content,
-                                    delivered: isMe,
-                                    isSender: isMe,
-                                    color: isMe
-                                        ? Color.fromARGB(255, 153, 55, 156)
-                                        : Colors
-                                            .grey.shade800), // message widget
-                                onReactionTap: (reaction) {
-                                  print('reaction: $reaction');
+                    child: Consumer<ChatProvider>(
+                      builder: (context, value, child) => GestureDetector(
+                        onLongPress: () {
+                          // navigate with a custom [HeroDialogRoute] to [ReactionsDialogWidget]
+                          Navigator.of(context).push(
+                            HeroDialogRoute(
+                              builder: (context) {
+                                return ReactionsDialogWidget(
+                                  id: "${message.id}", // unique id for message
+                                  messageWidget: BubbleSpecialOne(
+                                      text: message.content,
+                                      delivered: isMe,
+                                      isSender: isMe,
+                                      color: isMe
+                                          ? Color.fromARGB(255, 153, 55, 156)
+                                          : Colors
+                                              .grey.shade800), // message widget
+                                  onReactionTap: (reaction) {
+                                    print('reaction: $reaction');
+                                    // reactions = reaction;
+                                    list.add(reaction ?? "");
 
-                                  if (reaction == '➕') {
-                                    // show emoji picker container
-                                  } else {
-                                    // add reaction to message
-                                  }
-                                },
-                                onContextMenuTap: (menuItem) {
-                                  print('menu item: $menuItem');
+                                    if (reaction == '➕') {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => EmojiPickerMenu(),
+                                      ));
+                                      // show emoji picker container
+                                    } else {
+                                      // add reaction to message
+                                    }
+                                  },
+                                  onContextMenuTap: (MenuItem menuItem) async {
+                                    print('menu item: ${menuItem.label}');
 
-                                  // handle context menu item
-                                },
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Hero(
-                        tag: message.id,
-                        child: BubbleSpecialOne(
-                            text: message.content,
-                            delivered: isMe,
-                            isSender: isMe,
-                            color: isMe
-                                ? Color.fromARGB(255, 153, 55, 156)
-                                : Colors.grey.shade800),
+                                    if (menuItem.label == "Delete") {
+                                      var r = await value.deleteMessageFromChat(
+                                          message.id, message.senderId);
+                                      print(
+                                          "the result on deleteting the msg $r");
+                                    }
+
+                                    // handle context menu item
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            // your message
+                            Hero(
+                              tag: message.id,
+                              child: BubbleSpecialOne(
+                                  text: message.content,
+                                  delivered: isMe,
+                                  isSender: isMe,
+                                  color: isMe
+                                      ? Color.fromARGB(255, 153, 55, 156)
+                                      : Colors.grey.shade800),
+                            ),
+
+                            // reactions
+                            Positioned(
+                              // the position where to show your reaction
+                              bottom: 4,
+                              right: 20,
+                              child: StackedReactions(
+                                // reactions widget
+                                size: 10,
+                                reactions: list, // list of reaction strings
+                                stackedValue:
+                                    1.0, // Value used to calculate the horizontal offset of each reaction
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );

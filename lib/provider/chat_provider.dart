@@ -16,11 +16,10 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  deleteMessageFromChat(int msgId) async {
-    await ChatApiServices().deleteMessage(msgId);
-    for (int i = 0; i < messagesList.length; i++) {
-      messagesList.removeWhere((messagesList[i].id == msgId) as bool Function(
-          UserChatModel element));
-    }
+  Future<bool> deleteMessageFromChat(int msgId, int userId) async {
+    await ChatApiServices().deleteMessage(msgId, userId);
+    messagesList.removeWhere((message) => message.id == msgId);
+    notifyListeners();
+    return true;
   }
 }

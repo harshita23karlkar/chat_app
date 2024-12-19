@@ -44,9 +44,10 @@ class ChatApiServices {
     return responseData.data;
   }
 
-  deleteMessage(int msgId) async {
+  deleteMessage(int msgId, int userId) async {
     User user = await LocalstorageService.getUser();
-    var credentials = {"id": "$msgId", "sender_id": "${user.id}"};
+    var credentials = {"id": "$msgId", "sender_id": "$userId"};
+    print("message id = $msgId  and senderId = ${userId}");
     var res = ApiServices.deleteRequest(
         endPoint: ApiEndPoints.messages,
         headers: {
